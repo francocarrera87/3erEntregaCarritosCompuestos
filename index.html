@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda en Línea</title>
+    <link rel="stylesheet" href="./css/estilo.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Tienda en Línea</h1>
+            <form id="formulario-ingreso">
+                <label for="nombre-usuario">Ingrese su nombre:</label>
+                <input type="text" id="nombre-usuario" placeholder="Nombre de Usuario" required>
+                <button type="submit">Ingresar</button>
+            </form>
+            <h2 id="mensaje-bienvenida"></h2>
+        </header>
+
+        <main>
+            <section class="productos">
+                <!-- Aquí se mostrarán los productos -->
+            </section>
+
+            <section class="usuarios-lista">
+                <h2>Usuarios Ingresados</h2>
+                <ul id="usuarios-lista"></ul>
+                <p id="total-general"></p> <!-- Aquí se mostrará el total general -->
+            </section>
+
+            <section class="carrito">
+                <h2>Carrito de Compras de <span id="nombre-usuario-carrito"></span></h2>
+                <ul id="carrito-lista">
+                    <!-- Aquí se mostrarán los productos en el carrito -->
+                </ul>
+                <button id="limpiar-carrito">Limpiar Carrito</button>
+                <button id="confirmar-carrito">Confirmar Carrito</button>
+            </section>
+        </main>
+
+    </div>
+
+    <script src="./js/productos.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/carrito.js"></script>
+</body>
+
+</html>
