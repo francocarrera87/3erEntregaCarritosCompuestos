@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const formularioIngreso = document.getElementById('formulario-ingreso');
     const mensajeBienvenida = document.getElementById('mensaje-bienvenida');
     const usuariosLista = document.getElementById('usuarios-lista');
-    const usuariosGastos = document.querySelectorAll('.columna span');
+    const compraConjuntoBtn = document.getElementById('compra-conjunto'); 
+    const mensajeCompra = document.getElementById('mensaje-compra'); 
+    const tituloCarrito = document.getElementById('titulo-carrito'); 
 
     const usuariosIngresados = JSON.parse(localStorage.getItem('usuariosIngresados')) || [];
     const carritos = JSON.parse(localStorage.getItem('carritos')) || {};
@@ -60,19 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         totalElement.textContent = `Total: $${total.toFixed(2)}`;
         carritoLista.appendChild(totalElement);
 
-        usuariosGastos.forEach((element, index) => {
-            const usuario = `usuario${index + 1}`;
-            if (usuariosIngresados.includes(usuario)) {
-                let totalUsuario = 0;
-                const carritoUsuario = carritos[usuario] || [];
-                carritoUsuario.forEach(producto => {
-                    totalUsuario += producto.precio;
-                });
-                element.textContent = `$${totalUsuario.toFixed(2)}`;
-            } else {
-                element.textContent = `$0.00`;
-            }
-        });
+        tituloCarrito.textContent = `Carrito de Compras de ${nombreUsuario}`; 
     }
 
     formularioIngreso.addEventListener('submit', function (event) {
@@ -116,6 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const pTotalGeneral = document.createElement('p');
       pTotalGeneral.textContent = `Total general: $${totalGeneral.toFixed(2)}`;
       usuariosLista.appendChild(pTotalGeneral);
+
+      if (usuariosIngresados.length > 1) {
+          compraConjuntoBtn.textContent = 'Realizar compra en conjunto';
+      } else {
+          compraConjuntoBtn.textContent = 'Realizar compra';
+      }
     }
 
     productosContainer.addEventListener('click', (event) => {
@@ -152,6 +148,16 @@ document.addEventListener('DOMContentLoaded', () => {
         mostrarCarrito(nombreUsuarioActual);
         mostrarListaUsuarios();
       }
+    });
+
+    compraConjuntoBtn.addEventListener('click', () => { 
+      usuariosIngresados.forEach(usuario => {
+          localStorage.removeItem(usuario); 
+          carritos[usuario] = []; 
+      });
+      guardarEnLocalStorage();
+      mensajeCompra.textContent = 'Compra realizada'; 
+      mostrarListaUsuarios();
     });
 
     mostrarProductos();

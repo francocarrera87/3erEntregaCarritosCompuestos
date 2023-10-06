@@ -22,30 +22,28 @@
 
         <main>
             <section class="productos">
-                <!-- Aquí se mostrarán los productos -->
+                
             </section>
 
             <section class="usuarios-lista">
                 <h2>Usuarios Ingresados</h2>
                 <ul id="usuarios-lista"></ul>
-                <p id="total-general"></p> <!-- Aquí se mostrará el total general -->
-            </section>
+                <p id="total-general"></p>
+                <button id="compra-conjunto">Realizar compra en conjunto</button> 
+                <p id="mensaje-compra"></p> 
 
             <section class="carrito">
-                <h2>Carrito de Compras de <span id="nombre-usuario-carrito"></span></h2>
+                <h2 id="titulo-carrito">Carrito de Compras de</h2> 
                 <ul id="carrito-lista">
-                    <!-- Aquí se mostrarán los productos en el carrito -->
+                    
                 </ul>
                 <button id="limpiar-carrito">Limpiar Carrito</button>
                 <button id="confirmar-carrito">Confirmar Carrito</button>
             </section>
         </main>
-
     </div>
-
-    <script src="./js/productos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.31/sweetalert2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.31/sweetalert2.min.css"></script>
     <script src="./js/app.js"></script>
-    <script src="./js/carrito.js"></script>
 </body>
-
 </html>
