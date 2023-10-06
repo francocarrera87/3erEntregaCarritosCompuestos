@@ -91,3 +91,23 @@ ul {
 .columna:last-child {
     margin-right: 0;
 }
+.productos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .producto {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .producto h3,
+  .producto p,
+  .producto button {
+    text-align: center;
+  }
+  
