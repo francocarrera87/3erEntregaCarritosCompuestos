@@ -17,31 +17,79 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('usuariosIngresados', JSON.stringify(usuariosIngresados));
         localStorage.setItem('carritos', JSON.stringify(carritos));
     }
-
+    
     function crearCarrito(nombreUsuario) {
         if (!carritos[nombreUsuario]) {
             carritos[nombreUsuario] = [];
         }
     }
-
+    document.getElementById('compra-conjunto').addEventListener('click', () => {
+        Swal.fire({
+            title: 'Compra realizada',
+            text: 'Tu compra ha sido realizada con éxito',
+            icon: 'success',
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        });
+    });
+    
     function mostrarProductos() {
         const productos = [
-            { nombre: "Producto 1", precio: 45 },
-            { nombre: "Producto 2", precio: 63 },
-            { nombre: "Producto 3", precio: 77 }
+            { nombre: "Ojo de bife", precio: 5, imagenUrl: "./img/bife.jpg" },
+            { nombre: "Combo Chuleta", precio: 4, imagenUrl: "./img/bifes.jpg" },
+            { nombre: "Bife de Cerdo", precio: 2, imagenUrl: "./img/chancho.jpg" },
+            { nombre: "Pollo completo", precio: 2, imagenUrl: "./img/pollo.jpg" }
         ];
-
+    
         productos.forEach((producto, index) => {
             const productoDiv = document.createElement('div');
             productoDiv.className = 'producto';
-            productoDiv.innerHTML = `
-                <h3>${producto.nombre}</h3>
-                <p>Precio: $${producto.precio}</p>
-                <button class="agregar-carrito" data-nombre="${producto.nombre}" data-precio="${producto.precio}">Agregar al Carrito</button>
-            `;
+    
+            const img = document.createElement('img');
+            img.src = producto.imagenUrl; // Asegúrate de tener una propiedad 'imagenUrl' en cada objeto de producto
+            img.alt = producto.nombre;
+            productoDiv.appendChild(img);
+    
+            const h3 = document.createElement('h3');
+            h3.textContent = producto.nombre;
+            productoDiv.appendChild(h3);
+    
+            const p = document.createElement('p');
+            p.textContent = `Precio: $${producto.precio}`;
+            productoDiv.appendChild(p);
+    
+            const button = document.createElement('button');
+            button.textContent = 'Agregar al carrito';
+            button.classList.add('agregar-carrito');
+            button.dataset.nombre = producto.nombre;
+            button.dataset.precio = producto.precio;
+            productoDiv.appendChild(button);
+    
             productosContainer.appendChild(productoDiv);
         });
     }
+    async function mostrarCotizacionDolar() {
+        const valorDolarElement = document.getElementById('valor-dolar');
+    
+        try {
+            const tasaDeCambio = await obtenerTasaDeCambio();
+            valorDolarElement.textContent = `1 USD = ${tasaDeCambio.toFixed(2)} ARS`;
+        } catch (error) {
+            valorDolarElement.textContent = 'No se pudo obtener la cotización del dólar.';
+        }
+    }
+    
+
+    setInterval(mostrarCotizacionDolar, 60 * 1000);
+    
+ 
+    mostrarCotizacionDolar();
+    
+    
 
     function mostrarCarrito(nombreUsuario) {
         const carrito = carritos[nombreUsuario] || [];
@@ -83,6 +131,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nombreUsuarioInput.value = '';
     });
+
+    async function obtenerTasaDeCambio() {
+      const url = 'https://api.exchangerate-api.com/v4/latest/USD';
+      const respuesta = await fetch(url);
+      const datos = await respuesta.json();
+      return datos.rates.ARS;
+    }
 
     function calcularTotalUsuario(nombreUsuario) {
       let totalUsuario = 0;
@@ -139,10 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    confirmarCarritoBtn.addEventListener('click', () => {
+    confirmarCarritoBtn.addEventListener('click', async () => {
       const nombreUsuarioActual= localStorage.getItem("usuario");
       if (nombreUsuarioActual && carritos[nombreUsuarioActual].length > 0) {
-        localStorage.setItem(nombreUsuarioActual, JSON.stringify(carritos[nombreUsuarioActual]));
+        const tasaDeCambio = await obtenerTasaDeCambio();
+        const carritoEnPesos = carritos[nombreUsuarioActual].map(producto => {
+            return {
+                nombre: producto.nombre,
+                precio: producto.precio * tasaDeCambio
+            };
+        });
+        localStorage.setItem(nombreUsuarioActual, JSON.stringify(carritoEnPesos));
         carritos[nombreUsuarioActual] = [];
         guardarEnLocalStorage();
         mostrarCarrito(nombreUsuarioActual);
@@ -151,15 +213,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     compraConjuntoBtn.addEventListener('click', () => { 
-      usuariosIngresados.forEach(usuario => {
-          localStorage.removeItem(usuario); 
-          carritos[usuario] = []; 
+        let totalGeneral = 0;
+        usuariosIngresados.forEach(usuario => {
+            let totalUsuario = calcularTotalUsuario(usuario);
+            totalGeneral += totalUsuario;
+        });
+      
+        if (totalGeneral > 0) {
+          usuariosIngresados.forEach(usuario => {
+              localStorage.removeItem(usuario); 
+              carritos[usuario] = []; 
+          });
+          guardarEnLocalStorage();
+          mostrarListaUsuarios();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'El carrito está vacío!',
+          })
+        }
       });
-      guardarEnLocalStorage();
-      mensajeCompra.textContent = 'Compra realizada'; 
-      mostrarListaUsuarios();
-    });
+      
+      
 
     mostrarProductos();
     mostrarListaUsuarios();
+    
 });
+
